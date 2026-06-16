@@ -13,8 +13,18 @@ $resultado = $repo->relatorioProfissional(
     $data2
 );
 
+// 1. Configura o fuso horário para garantir que a hora saia correta
+date_default_timezone_set('America/Sao_Paulo');
+
+// 2. Gera a data e hora no formato: d (dia), m (mês), y (ano com 2 dígitos) - H (hora), i (minutos)
+$dataHoraAtual = date('dmy-Hi');
+
+// 3. Monta o nome do arquivo exatamente como você pediu
+$nomeArquivo = "VendasProfissional" . $dataHoraAtual . ".xls";
+
+// 4. Envia os cabeçalhos para o navegador com o novo nome
 header("Content-Type: application/vnd.ms-excel; charset=UTF-8");
-header("Content-Disposition: attachment; filename=relatorio_profissionais.xls");
+header("Content-Disposition: attachment; filename=" . $nomeArquivo);
 header("Pragma: no-cache");
 header("Expires: 0");
 

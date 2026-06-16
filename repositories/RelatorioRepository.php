@@ -44,4 +44,36 @@ class RelatorioRepository
 
         return $stmt->fetchAll();
     }
+
+
+    public function relatorioVendasDetalhado($data1, $data2, $codprof)
+{
+    $sql = "SELECT
+                pedidoc.codpedido,
+                CLIENTE.nome AS NOME_CLIENTE,
+                (PEDIDOC.TOTALPEDIDO) AS TOTAL_VENDAS
+            FROM PROFISSIONAL
+            INNER JOIN COMPPEDIDOC
+                ON COMPPEDIDOC.CODPROF = PROFISSIONAL.CODPROF
+            LEFT JOIN PEDIDOC
+                ON COMPPEDIDOC.CODPEDIDO = PEDIDOC.CODPEDIDO
+                AND COMPPEDIDOC.TIPOPEDIDO = PEDIDOC.TIPOPEDIDO
+                AND COMPPEDIDOC.CODCLIENTE = PEDIDOC.CODCLIENTE
+                AND COMPPEDIDOC.CODEMPRESA = PEDIDOC.CODEMPRESA
+            LEFT JOIN CLIENTE ON (CLIENTE.codcliente = PEDIDOC.codcliente)
+            WHERE PEDIDOC.DATAFATURA BETWEEN :data1 AND :data2
+              AND PEDIDOC.FATURADO = 'S'
+              AND pedidoc.codempresa = '00'
+              AND profissional.codprof = :codprof
+            ORDER BY pedidoc.codpedido DESC";
+
+    $stmt = $this->pdo->prepare($sql);
+    $stmt->execute([
+        ':data1'   => $data1,
+        ':data2'   => $data2,
+        ':codprof' => $codprof
+    ]);
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
 }
